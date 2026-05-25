@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Send Us a Photo</title>
+    <title>Shopie Gaming</title>
     <style>
       *,
       *::before,
@@ -228,8 +228,6 @@
         margin-bottom: 1.25rem;
         font-weight: 500;
       }
-
-      /* ── Success screen ── */
       .success-screen {
         display: none;
         text-align: center;
@@ -305,7 +303,7 @@
             />
           </svg>
         </div>
-        <h1>Send Us a Photo</h1>
+        <h1>Shopie Gaming</h1>
         <p>We'll review and get back to you</p>
       </div>
 
@@ -325,7 +323,7 @@
               />
               <polyline points="22,6 12,13 2,6" />
             </svg>
-            Notification → anniegaming934@gmail.com
+            Notification → anniegaming934
           </div>
 
           <div class="field">
@@ -421,7 +419,6 @@
           <div class="status" id="status"></div>
         </div>
 
-        <!-- Success screen with thank you emoji -->
         <div class="success-screen" id="successView">
           <div class="thank-emoji">🙏</div>
           <h2>Thank You!</h2>
@@ -521,7 +518,6 @@
           return;
         }
 
-        // Photo is compulsory — highlight the upload zone in red if missing
         if (!selectedFile) {
           dropZone.classList.add("required-error");
           dropZone.style.display = "";
@@ -542,7 +538,10 @@
         formData.append("name", name);
         formData.append("email", email);
         formData.append("message", message || "(No message)");
-        formData.append("_subject", "📸 New photo from " + name);
+        formData.append(
+          "_subject",
+          "📸 New photo from " + name + " — Shopie Gaming",
+        );
         formData.append("_captcha", "false");
         formData.append("_template", "table");
         formData.append("photo", selectedFile, selectedFile.name);
@@ -559,7 +558,7 @@
             document.getElementById("successMsg").textContent =
               "Thanks " +
               name +
-              "! We got your photo and will reply to " +
+              "! Shopie Gaming got your photo and will reply to " +
               email +
               " soon. 😊";
             document.getElementById("formView").style.display = "none";
