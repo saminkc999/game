@@ -24,6 +24,57 @@
         overflow-x: hidden;
       }
 
+      /* Setup banner */
+      .setup-banner {
+        background: #2a1a00;
+        border-bottom: 2px solid #ff9500;
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #ffd700;
+      }
+      .setup-banner strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+      .setup-banner a {
+        color: #ff9500;
+        font-weight: 800;
+      }
+      .setup-banner ol {
+        padding-left: 18px;
+        margin: 4px 0 8px;
+        color: #ffcc70;
+        line-height: 1.8;
+      }
+      .key-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .key-row input {
+        flex: 1;
+        border: 1.5px solid #ff9500;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 13px;
+        background: #1a0a00;
+        color: #fff;
+        outline: none;
+        font-family: monospace;
+      }
+      .key-row button {
+        background: #ff9500;
+        color: #1a0533;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: "Nunito", sans-serif;
+      }
+
       .hero-row {
         display: flex;
         flex-direction: row;
@@ -221,8 +272,6 @@
         background: none;
         border: none;
         padding: 0;
-        display: flex;
-        align-items: center;
       }
       .game-tag .remove-tag:hover {
         color: #ff6b6b;
@@ -242,7 +291,6 @@
         color: rgba(255, 255, 255, 0.32);
       }
 
-      /* Upload zone — two big buttons for camera & gallery */
       .upload-zone {
         border: 2px dashed rgba(255, 215, 0, 0.32);
         border-radius: 14px;
@@ -263,7 +311,6 @@
         color: rgba(255, 255, 255, 0.4);
         margin-bottom: 10px;
       }
-
       .upload-btns {
         display: flex;
         gap: 10px;
@@ -292,9 +339,6 @@
       .upload-btn:hover {
         background: rgba(255, 215, 0, 0.18);
         border-color: #ffd700;
-      }
-      .upload-btn svg {
-        flex-shrink: 0;
       }
 
       .preview-wrap {
@@ -449,6 +493,28 @@
     </style>
   </head>
   <body>
+    <!-- ⚙️ Owner setup — hidden after key saved -->
+    <div class="setup-banner" id="setupBanner">
+      <strong>⚙️ Owner Setup — Do this once (only you see this)</strong>
+      <ol>
+        <li>
+          Go to
+          <a href="https://web3forms.com" target="_blank">web3forms.com</a>
+        </li>
+        <li>Enter <strong>anniegaming934@gmail.com</strong></li>
+        <li>Copy the Access Key from your Gmail inbox</li>
+        <li>Paste below and tap Save</li>
+      </ol>
+      <div class="key-row">
+        <input
+          type="text"
+          id="keyInput"
+          placeholder="Paste Web3Forms Access Key here..."
+        />
+        <button onclick="saveKey()">Save</button>
+      </div>
+    </div>
+
     <div class="hero-row">
       <div class="side-col">
         <div class="side-icon" onclick="selectGame(this, 'Game Vault')">
@@ -567,7 +633,6 @@
             autocomplete="name"
           />
         </div>
-
         <div class="field">
           <label>&#128231; Your Gmail <span class="req">*</span></label>
           <input
@@ -578,7 +643,6 @@
             autocomplete="email"
           />
         </div>
-
         <div class="field">
           <label>Game Name <span class="req">*</span></label>
           <div
@@ -595,7 +659,6 @@
             />
           </div>
         </div>
-
         <div class="field">
           <label>Message (optional)</label>
           <textarea
@@ -604,27 +667,11 @@
             placeholder="Describe your photo or add a note..."
           ></textarea>
         </div>
-
         <div class="field">
           <label>Your photo <span class="req">*</span></label>
-          <div
-            class="upload-zone"
-            id="dropZone"
-            ondragover="
-              event.preventDefault();
-              this.classList.add('drag');
-            "
-            ondragleave="this.classList.remove('drag')"
-            ondrop="
-              event.preventDefault();
-              this.classList.remove('drag');
-              if (event.dataTransfer.files[0])
-                loadFile(event.dataTransfer.files[0]);
-            "
-          >
+          <div class="upload-zone" id="dropZone">
             <p>Choose how to upload your photo</p>
             <div class="upload-btns">
-              <!-- Gallery / Files -->
               <button
                 class="upload-btn"
                 onclick="document.getElementById('fileGallery').click()"
@@ -644,7 +691,6 @@
                 </svg>
                 Gallery / Files
               </button>
-              <!-- Camera -->
               <button
                 class="upload-btn"
                 onclick="document.getElementById('fileCamera').click()"
@@ -669,18 +715,14 @@
           </div>
           <div class="preview-wrap" id="previewWrap" style="display: none">
             <img id="preview" src="" alt="Selected photo" />
-            <button class="remove-btn" id="removeBtn" title="Remove">
-              &times;
-            </button>
+            <button class="remove-btn" id="removeBtn">&times;</button>
           </div>
-          <!-- Gallery input — NO capture attribute -->
           <input
             type="file"
             id="fileGallery"
             accept="image/*"
             style="display: none"
           />
-          <!-- Camera input — capture forces camera -->
           <input
             type="file"
             id="fileCamera"
@@ -689,7 +731,6 @@
             style="display: none"
           />
         </div>
-
         <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
           &#127918; &nbsp; SEND PHOTO
         </button>
@@ -708,11 +749,23 @@
     </div>
 
     <script>
-      const FORM_ENDPOINT =
-        "https://formsubmit.co/ajax/anniegaming934@gmail.com";
-      let selectedFile = null;
-      let selectedGames = [];
+      let W3F_KEY = localStorage.getItem("w3f_key") || "";
+      if (W3F_KEY)
+        document.getElementById("setupBanner").style.display = "none";
 
+      function saveKey() {
+        const v = document.getElementById("keyInput").value.trim();
+        if (!v) {
+          alert("Please paste your Web3Forms key.");
+          return;
+        }
+        W3F_KEY = v;
+        localStorage.setItem("w3f_key", v);
+        document.getElementById("setupBanner").style.display = "none";
+      }
+
+      let selectedFile = null,
+        selectedGames = [];
       const fileGallery = document.getElementById("fileGallery");
       const fileCamera = document.getElementById("fileCamera");
       const preview = document.getElementById("preview");
@@ -728,7 +781,6 @@
       fileCamera.addEventListener("change", (e) => {
         if (e.target.files[0]) loadFile(e.target.files[0]);
       });
-
       removeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         selectedFile = null;
@@ -755,7 +807,6 @@
         reader.readAsDataURL(file);
       }
 
-      // Game tag logic
       function selectGame(el, name) {
         const idx = selectedGames.indexOf(name);
         if (idx > -1) {
@@ -768,7 +819,6 @@
           addTag(name);
         }
       }
-
       function addTag(name) {
         if (!name.trim()) return;
         const tag = document.createElement("div");
@@ -779,7 +829,6 @@
           '<button class="remove-tag" onclick="removeTag(this)">&times;</button>';
         tagField.insertBefore(tag, tagInput);
       }
-
       function removeTag(btn) {
         const tag = btn.parentElement;
         const name = tag.dataset.name;
@@ -791,13 +840,11 @@
             ic.classList.remove("selected");
         });
       }
-
       function removeTagByName(name) {
         tagField.querySelectorAll(".game-tag").forEach((t) => {
           if (t.dataset.name === name) t.remove();
         });
       }
-
       tagInput.addEventListener("keydown", (e) => {
         if ((e.key === "Enter" || e.key === ",") && tagInput.value.trim()) {
           e.preventDefault();
@@ -865,6 +912,14 @@
         }
         const gamename = selectedGames.join(", ");
 
+        if (!W3F_KEY) {
+          document.getElementById("setupBanner").style.display = "";
+          showStatus(
+            "Owner setup required. Please save the Web3Forms key.",
+            "error",
+          );
+          return;
+        }
         if (!name) {
           showStatus("Please enter your name.", "error");
           return;
@@ -895,31 +950,31 @@
         document.getElementById("status").className = "status";
 
         const formData = new FormData();
+        formData.append("access_key", W3F_KEY);
         formData.append("name", name);
         formData.append("email", customerEmail);
         formData.append("game_name", gamename);
         formData.append("message", message || "(No message)");
         formData.append(
-          "_subject",
+          "subject",
           "New photo from " +
             name +
             " | Games: " +
             gamename +
             " - Shopie Gaming",
         );
-        formData.append("_captcha", "false");
-        formData.append("_template", "table");
-        formData.append("_replyto", customerEmail);
+        formData.append("from_name", "Shopie Gaming Form");
+        formData.append("replyto", customerEmail);
         formData.append("photo", selectedFile, selectedFile.name);
 
         try {
-          const res = await fetch(FORM_ENDPOINT, {
+          const res = await fetch("https://api.web3forms.com/submit", {
             method: "POST",
             headers: { Accept: "application/json" },
             body: formData,
           });
           const data = await res.json();
-          if (data.success === "true" || data.success === true) {
+          if (data.success) {
             document.getElementById("successMsg").textContent =
               "Thanks " +
               name +
